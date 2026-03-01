@@ -1,0 +1,83 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      # 在服务刚注册或实例短暂不可用时进行自动重试，缓解首次请求 503
+      default-filters:
+        - name: Retry
+          args:
+            retries: 2
+            statuses: SERVICE_UNAVAILABLE, BAD_GATEWAY, GATEWAY_TIMEOUT
+            methods: GET, POST
+            backoff:
+              firstBackoff: 200ms
+              maxBackoff: 1000ms
+              factor: 2
+              basedOnPreviousValue: true
+      routes:
+        - id: ebookstore-backend
+          uri: lb://ebookstore-backend
+          predicates:
+            - Path=/api/**
+
+        - id: author-service
+          uri: lb://author-service
+          predicates:
+            - Path=/author/**
+          filters:
+            - StripPrefix=1
+
+
+        - id: price-service
+          uri: lb://price-service
+          predicates:
+            - Path=/price/**
+          filters:
+            - StripPrefix=1
+
+
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowed-origin-patterns: "*"
+            allowed-methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowed-headers: "*"
+            allow-credentials: true
+            max-age: 3600
+
+    # 缩短实例缓存时间，避免缓存空实例列表导致短暂 503
+    loadbalancer:
+      cache:
+        ttl: 5s
+      health-check:
+        enabled: true
+        interval: 5s
+
+
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8040/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+    # 减少拉取注册表的间隔，降低冷启动 503 概率
+    registry-fetch-interval-seconds: 5
+  instance:
+    prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 10
+    lease-expiration-duration-in-seconds: 30
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    reactor.netty: INFO

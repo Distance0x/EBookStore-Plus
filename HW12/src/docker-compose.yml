@@ -1,0 +1,48 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: ebookstore-mysql
+    command: >-
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-ebookstore}
+      TZ: Asia/Shanghai
+    ports:
+      - "3406:3306"
+    volumes:
+      # Bind mount: 数据目录持久化（满足作业要求）
+      - type: bind
+        source: ./.docker/mysql/data
+        target: /var/lib/mysql
+      # 初始化脚本：仅在数据目录为空的首次启动执行
+      - type: bind
+        source: ./src/sql/data.sql
+        target: /docker-entrypoint-initdb.d/01-data.sql
+        read_only: true
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -p$${MYSQL_ROOT_PASSWORD} --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ebookstore-backend
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/${MYSQL_DATABASE:-ebookstore}?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=utf8&connectionCollation=utf8mb4_unicode_ci
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+      TZ: Asia/Shanghai
+    ports:
+      - "8080:8080"
+
+networks:
+  default:
+    name: ebookstore-net

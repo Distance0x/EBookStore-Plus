@@ -1,0 +1,29 @@
+.root-container {
+  max-width: 80rem; /* 相当于max-w-7xl */
+  margin-left: auto;
+  margin-right: auto;
+  padding: 4rem 2rem; /* 相当于px-8 py-16 */
+  text-align: center;
+}
+
+.logo {
+  height: 6rem; /* 相当于h-24 */
+  padding: 1.5rem; /* 相当于p-6 */
+  transition: all 300ms;
+}
+
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+.card {
+  padding: 2rem; /* 相当于p-8 */
+}
+
+.read-the-docs {
+  color: rgb(107 114 128); /* 相当于text-gray-500 */
+}

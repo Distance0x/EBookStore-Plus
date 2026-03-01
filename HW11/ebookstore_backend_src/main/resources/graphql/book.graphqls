@@ -1,0 +1,15 @@
+type Book {
+  id: ID!
+  title: String
+  author: String
+  price: Float
+  cover: String
+  description: String
+  isbn: String
+  stock: Int
+  publisher: String
+}
+
+type Query {
+  searchBooks(keyword: String!): [Book!]!
+}

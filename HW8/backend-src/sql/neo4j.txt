@@ -1,0 +1,138 @@
+// ========== 1. 清空现有数据（可选）==========
+MATCH (n) DETACH DELETE n;
+
+// ========== 2. 创建所有标签节点 ==========
+
+// 一级分类
+CREATE (computer:Tag {name: '计算机'})
+CREATE (novel:Tag {name: '小说'})
+
+// 计算机子分类
+CREATE (programming:Tag {name: '编程'})
+CREATE (system:Tag {name: '系统'})
+CREATE (algorithm:Tag {name: '算法'})
+CREATE (designPattern:Tag {name: '设计模式'})
+CREATE (engineering:Tag {name: '软件工程'})
+CREATE (pm:Tag {name: '项目管理'})
+
+// 编程相关
+CREATE (python:Tag {name: 'Python'})
+CREATE (javascript:Tag {name: 'JavaScript'})
+CREATE (frontend:Tag {name: '前端'})
+CREATE (bestPractice:Tag {name: '最佳实践'})
+CREATE (intro:Tag {name: '入门'})
+CREATE (oop:Tag {name: '面向对象'})
+
+// 计算机其他
+CREATE (bottom:Tag {name: '底层'})
+CREATE (math:Tag {name: '数学'})
+CREATE (startup:Tag {name: '创业'})
+CREATE (thought:Tag {name: '思想'})
+
+// 小说子分类
+CREATE (literature:Tag {name: '文学'})
+CREATE (scifi:Tag {name: '科幻'})
+CREATE (mystery:Tag {name: '推理'})
+CREATE (fairytale:Tag {name: '童话'})
+
+// 文学子分类
+CREATE (modernLit:Tag {name: '现代文学'})
+CREATE (foreignLit:Tag {name: '外国文学'})
+CREATE (japaneseLit:Tag {name: '日本文学'})
+CREATE (magic:Tag {name: '魔幻现实主义'})
+CREATE (satire:Tag {name: '讽刺'})
+CREATE (love:Tag {name: '爱情'})
+CREATE (classic:Tag {name: '经典'})
+
+// 科幻子分类
+CREATE (hardScifi:Tag {name: '硬科幻'})
+CREATE (softScifi:Tag {name: '软科幻'});
+
+// ========== 3. 创建标签关系 ==========
+
+// 计算机 -> 子分类
+MATCH (computer:Tag {name: '计算机'}), 
+      (programming:Tag {name: '编程'}),
+      (system:Tag {name: '系统'}),
+      (algorithm:Tag {name: '算法'}),
+      (designPattern:Tag {name: '设计模式'}),
+      (engineering:Tag {name: '软件工程'})
+CREATE (computer)-[:PARENT_OF]->(programming)
+CREATE (computer)-[:PARENT_OF]->(system)
+CREATE (computer)-[:PARENT_OF]->(algorithm)
+CREATE (computer)-[:PARENT_OF]->(designPattern)
+CREATE (computer)-[:PARENT_OF]->(engineering);
+
+// 编程 -> 子分类
+MATCH (programming:Tag {name: '编程'}),
+      (python:Tag {name: 'Python'}),
+      (javascript:Tag {name: 'JavaScript'}),
+      (bestPractice:Tag {name: '最佳实践'})
+CREATE (programming)-[:PARENT_OF]->(python)
+CREATE (programming)-[:PARENT_OF]->(javascript)
+CREATE (programming)-[:PARENT_OF]->(bestPractice);
+
+// JavaScript -> 前端
+MATCH (javascript:Tag {name: 'JavaScript'}), (frontend:Tag {name: '前端'})
+CREATE (javascript)-[:PARENT_OF]->(frontend);
+
+// Python -> 入门
+MATCH (python:Tag {name: 'Python'}), (intro:Tag {name: '入门'})
+CREATE (python)-[:PARENT_OF]->(intro);
+
+// 系统 -> 底层
+MATCH (system:Tag {name: '系统'}), (bottom:Tag {name: '底层'})
+CREATE (system)-[:PARENT_OF]->(bottom);
+
+// 算法 -> 数学
+MATCH (algorithm:Tag {name: '算法'}), (math:Tag {name: '数学'})
+CREATE (algorithm)-[:PARENT_OF]->(math);
+
+// 设计模式 -> 面向对象
+MATCH (designPattern:Tag {name: '设计模式'}), (oop:Tag {name: '面向对象'})
+CREATE (designPattern)-[:PARENT_OF]->(oop);
+
+// 软件工程 -> 项目管理
+MATCH (engineering:Tag {name: '软件工程'}), (pm:Tag {name: '项目管理'})
+CREATE (engineering)-[:PARENT_OF]->(pm);
+
+// 小说 -> 子分类
+MATCH (novel:Tag {name: '小说'}),
+      (literature:Tag {name: '文学'}),
+      (scifi:Tag {name: '科幻'}),
+      (mystery:Tag {name: '推理'}),
+      (fairytale:Tag {name: '童话'})
+CREATE (novel)-[:PARENT_OF]->(literature)
+CREATE (novel)-[:PARENT_OF]->(scifi)
+CREATE (novel)-[:PARENT_OF]->(mystery)
+CREATE (novel)-[:PARENT_OF]->(fairytale);
+
+// 文学 -> 子分类
+MATCH (literature:Tag {name: '文学'}),
+      (modernLit:Tag {name: '现代文学'}),
+      (foreignLit:Tag {name: '外国文学'}),
+      (japaneseLit:Tag {name: '日本文学'}),
+      (magic:Tag {name: '魔幻现实主义'})
+CREATE (literature)-[:PARENT_OF]->(modernLit)
+CREATE (literature)-[:PARENT_OF]->(foreignLit)
+CREATE (literature)-[:PARENT_OF]->(japaneseLit)
+CREATE (literature)-[:PARENT_OF]->(magic);
+
+// 现代文学 -> 讽刺
+MATCH (modernLit:Tag {name: '现代文学'}), (satire:Tag {name: '讽刺'})
+CREATE (modernLit)-[:PARENT_OF]->(satire);
+
+// 日本文学 -> 爱情
+MATCH (japaneseLit:Tag {name: '日本文学'}), (love:Tag {name: '爱情'})
+CREATE (japaneseLit)-[:PARENT_OF]->(love);
+
+// 童话 -> 经典
+MATCH (fairytale:Tag {name: '童话'}), (classic:Tag {name: '经典'})
+CREATE (fairytale)-[:PARENT_OF]->(classic);
+
+// 科幻 -> 子分类
+MATCH (scifi:Tag {name: '科幻'}),
+      (hardScifi:Tag {name: '硬科幻'}),
+      (softScifi:Tag {name: '软科幻'})
+CREATE (scifi)-[:PARENT_OF]->(hardScifi)
+CREATE (scifi)-[:PARENT_OF]->(softScifi);

@@ -1,0 +1,17 @@
+server:
+  port: 9002
+
+spring:
+  application:
+    name: price-service
+  cloud:
+    function:
+      definition: calculateTotal
+# Eureka ???
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8040/eureka/
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${server.port}

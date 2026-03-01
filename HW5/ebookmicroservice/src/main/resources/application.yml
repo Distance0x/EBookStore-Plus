@@ -1,0 +1,34 @@
+server:
+  port: 9001
+
+spring:
+  application:
+    name: author-service
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/ebookstore?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: root
+    password: zzh20050312
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8040/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${server.port}
+    lease-renewal-interval-in-seconds: 10
+    lease-expiration-duration-in-seconds: 30
+
+logging:
+  level:
+    org.springframework.web: INFO
